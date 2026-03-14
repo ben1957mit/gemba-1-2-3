@@ -1,46 +1,68 @@
 import streamlit as st
+from datetime import date, time
 from utils.auth import require_login
-from utils.branding import add_branding, PRIMARY_GREEN
 
 require_login()
-add_branding()
 
-st.title("📅 Daily Gemba Walk Schedule")
+st.title("Daily Gemba Walk")
 
-st.subheader("Purpose")
-st.write("Observe real-time warehouse operations, ensure safety compliance, identify waste, and engage employees.")
+# --- Date and Shift ---
+st.subheader("Date & Shift")
+walk_date = st.date_input("Gemba Walk Date", value=date.today())
+shift_start = st.time_input("Shift Start Time", value=time(6, 0))
+shift_end = st.time_input("Shift End Time", value=time(14, 0))
 
-st.subheader("Daily Time Block")
-st.write("**Start Time:** 8:30 AM")
-st.write("**Duration:** 20–30 minutes")
-st.write("**Participants:** Supervisor, Manager, or CI Lead")
+# --- Walk Timing ---
+st.subheader("Walk Timing")
+walk_start = st.time_input("Walk Start Time", value=time(9, 0))
+walk_end = st.time_input("Walk End Time", value=time(10, 0))
 
-st.subheader("Daily Focus Areas")
-st.markdown(
-    """
-- **Monday:** Receiving & Unloading  
-- **Tuesday:** Put-Away & Storage  
-- **Wednesday:** Picking Operations  
-- **Thursday:** Packing & Quality Control  
-- **Friday:** Shipping & Staging  
-"""
+# --- Personnel ---
+st.subheader("Personnel")
+supervisor = st.text_input("Supervisor Name")
+team_lead = st.text_input("Team Lead Name")
+
+# --- Area Selection ---
+st.subheader("Area Observed")
+area = st.selectbox(
+    "Select Area",
+    ["Receiving", "Picking", "Packing", "Shipping", "Returns", "Inventory", "Safety Zone"]
 )
 
-st.subheader("Daily Checklist")
-st.markdown(
-    f"<div style='background:{PRIMARY_GREEN}20; padding:8px; border-radius:4px;'>"
-    "Check off items as you walk the floor.</div>",
-    unsafe_allow_html=True,
+# --- Issue Tracking ---
+st.subheader("Issues & Observations")
+
+issue_description = st.text_area("Describe the Issue or Observation")
+
+severity = st.radio(
+    "Severity Level",
+    ["Low", "Medium", "High", "Critical"],
+    index=0
 )
 
-checklist_items = [
-    "Verify work is performed according to SOPs",
-    "Check for safety hazards (aisles, equipment, PPE)",
-    "Observe workflow for delays or bottlenecks",
-    "Confirm inventory labeling and bin accuracy",
-    "Engage employees with improvement questions",
-    "Document issues and assign follow-up actions",
-]
+corrective_action = st.text_area("Corrective Action Taken (if any)")
 
-for item in checklist_items:
-    st.checkbox(item)
+responsible_person = st.text_input("Responsible Person for Follow-up")
+
+due_date = st.date_input("Follow-up Due Date", value=date.today())
+
+# --- Completion Button ---
+submitted = st.button("Save Daily Gemba Walk")
+
+# --- Summary ---
+if submitted:
+    st.success("Daily Gemba Walk Saved")
+    st.markdown("---")
+    st.subheader("Summary")
+
+    st.write("**Date:**", walk_date)
+    st.write("**Shift:**", shift_start, "to", shift_end)
+    st.write("**Walk:**", walk_start, "to", walk_end)
+    st.write("**Supervisor:**", supervisor)
+    st.write("**Team Lead:**", team_lead)
+    st.write("**Area:**", area)
+    st.write("**Issue:**", issue_description)
+    st.write("**Severity:**", severity)
+    st.write("**Corrective Action:**", corrective_action)
+    st.write("**Responsible:**", responsible_person)
+    st.write("**Due Date:**", due_date)
